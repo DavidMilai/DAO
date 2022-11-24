@@ -20,4 +20,13 @@ interface ICryptoDevsNFT {
         returns (uint256);
 }
 
-contract CryptoDevsDAO is Ownable {}
+contract CryptoDevsDAO is Ownable {
+    struct Proposal {
+        uint256 nftTokenId;
+        uint256 deadline;
+        uint256 yayVotes;
+        uint256 nayVotes;
+        bool executed;
+        mapping(uint256 => bool) voters;
+    }
+}
