@@ -23,8 +23,8 @@ contract CryptoDevsDAO is Ownable {
     ICryptoDevsNFT cryptoDevsNFT;
 
     enum Vote {
-        YAY, // YAY = 0
-        NAY // NAY = 1
+        YAY, // YAY YES = 0
+        NAY // NAY NO = 1
     }
 
     constructor(address _nftMarketplace, address _cryptoDevsNFT) payable {
