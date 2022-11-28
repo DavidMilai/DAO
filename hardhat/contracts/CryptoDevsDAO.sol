@@ -57,13 +57,6 @@ contract CryptoDevsDAO is Ownable {
     _;
 }
 
-    remove(
-        proposals[proposalIndex].executed == false,
-        "PROPOSAL_ALREADY_EXECUTED"
-    );
-    _;
-}
-
     function createProposal(uint256 _nftTokenId)
         external
         nftHolderOnly
