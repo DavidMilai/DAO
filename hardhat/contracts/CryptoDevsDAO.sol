@@ -46,22 +46,33 @@ contract CryptoDevsDAO is Ownable {
     }
 
     modifier inactiveProposalOnly(uint256 proposalIndex) {
-    require(
-        proposals[proposalIndex].deadline <= block.timestamp,
-        "DEADLINE_NOT_EXCEEDED"
-    );
-    require(
-        proposals[proposalIndex].executed == false,
-        "PROPOSAL_ALREADY_EXECUTED"
-    );
-    _;
-}
+        require(
+            proposals[proposalIndex].deadline <= block.timestamp,
+            "DEADLINE_NOT_EXCEEDED"
+        );
+        require(
+            proposals[proposalIndex].executed == false,
+            "PROPOSAL_ALREADY_EXECUTED"
+        );
+        _;
+    }
 
-    function createProposal(uint256 _nftTokenId)
-        external
-        nftHolderOnly
-        returns (uint256)
-    {
+    function executeProposal(
+        uint256 proposalIndex
+    ) external nftHolderOnly inactiveProposalOnly(proposalIndex) {
+        Proposal storage proposal = proposals[proposalIndex];
+
+        if (proposal.yayVotes > proposal.nayVotes) {
+            uint256 nftPrice = nftMarketplace.getPrice();
+            require(address(this).balance >= nftPrice, "NOT_ENOUGH_FUNDS");
+            nftMarketplace.purchase{value: nftPrice}(proposal.nftTokenId);
+        }
+        proposal.executed = true;
+    }
+
+    function createProposal(
+        uint256 _nftTokenId
+    ) external nftHolderOnly returns (uint256) {
         require(nftMarketplace.available(_nftTokenId), "NFT_NOT_FOR_SALE");
         Proposal storage proposal = proposals[numProposals];
         proposal.nftTokenId = _nftTokenId;
@@ -72,17 +83,16 @@ contract CryptoDevsDAO is Ownable {
         return numProposals - 1;
     }
 
-    function voteOnProposal(uint256 proposalIndex, Vote vote)
-        external
-        nftHolderOnly
-        activeProposalOnly(proposalIndex)
-    {
+    function voteOnProposal(
+        uint256 proposalIndex,
+        Vote vote
+    ) external nftHolderOnly activeProposalOnly(proposalIndex) {
         Proposal storage proposal = proposals[proposalIndex];
 
         uint256 voterNFTBalance = cryptoDevsNFT.balanceOf(msg.sender);
         uint256 numVotes = 0;
 
-         for (uint256 i = 0; i < voterNFTBalance; i++) {
+        for (uint256 i = 0; i < voterNFTBalance; i++) {
             uint256 tokenId = cryptoDevsNFT.tokenOfOwnerByIndex(msg.sender, i);
             if (proposal.voters[tokenId] == false) {
                 numVotes++;
