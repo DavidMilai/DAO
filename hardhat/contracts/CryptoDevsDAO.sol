@@ -111,4 +111,8 @@ contract CryptoDevsDAO is Ownable {
             proposal.nayVotes += numVotes;
         }
     }
+
+    receive() external payable {}
+
+    fallback() external payable {}
 }
