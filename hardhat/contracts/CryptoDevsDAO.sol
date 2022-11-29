@@ -57,6 +57,10 @@ contract CryptoDevsDAO is Ownable {
         _;
     }
 
+    function withdrawEther() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
+    }
+
     function executeProposal(
         uint256 proposalIndex
     ) external nftHolderOnly inactiveProposalOnly(proposalIndex) {
