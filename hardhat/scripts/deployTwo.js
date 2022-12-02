@@ -32,4 +32,5 @@ main()
     process.exit(1);
   });
 
-  // FakeNFTMarketplace deployed to: 0x53C18E361B1CF0a4F8967D1445367947B7dEa1AC
+  //FakeNFTMarketplace deployed to:  0x18921BD328dF2AbF2A879ea7Fa2F3A601483F4f1
+  //CryptoDevsDAO deployed to:  0xb19Cb2eEd6C90e3E2b50BA466b2F3C085CA942f1
