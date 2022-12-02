@@ -4,13 +4,13 @@ const { CRYPTODEVS_NFT_CONTRACT_ADDRESS } = require("../constants/constants");
 
 
 async function main() {
-  //  const FakeNFTMarketplace = await ethers.getContractFactory(
-  //   "FakeNFTMarketplace"
-  // );
-  //  const fakeNftMarketplace = await FakeNFTMarketplace.deploy();
-  //  await fakeNftMarketplace.deployed();
+   const FakeNFTMarketplace = await ethers.getContractFactory(
+    "FakeNFTMarketplace"
+  );
+   const fakeNftMarketplace = await FakeNFTMarketplace.deploy();
+   await fakeNftMarketplace.deployed();
 
-  // console.log("FakeNFTMarketplace deployed to: ", fakeNftMarketplace.address);
+  console.log("FakeNFTMarketplace deployed to: ", fakeNftMarketplace.address);
 
   const CryptoDevsDAO = await ethers.getContractFactory("CryptoDevsDAO");
   const cryptoDevsDAO = await CryptoDevsDAO.deploy(
@@ -32,4 +32,4 @@ main()
     process.exit(1);
   });
 
-  // FakeNFTMarketplace deployed to:  0x53C18E361B1CF0a4F8967D1445367947B7dEa1AC
+  // FakeNFTMarketplace deployed to: 0x53C18E361B1CF0a4F8967D1445367947B7dEa1AC
