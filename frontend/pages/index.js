@@ -41,6 +41,30 @@ export default function Home() {
       }
     };
 
+   const getDAOTreasuryBalance = async () => {
+    try {
+      const provider = await getProviderOrSigner();
+      const balance = await provider.getBalance(
+        CRYPTODEVS_DAO_CONTRACT_ADDRESS
+      );
+      setTreasuryBalance(balance.toString());
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  const getNumProposalsInDAO = async () => {
+      try {
+        const provider = await getProviderOrSigner();
+        const contract = getDaoContractInstance(provider);
+        const daoNumProposals = await contract.numProposals();
+        setNumProposals(daoNumProposals.toString());
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
 
 return()
 }
