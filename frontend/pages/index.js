@@ -9,11 +9,10 @@ import {
   CRYPTODEVS_DAO_CONTRACT_ADDRESS,
   CRYPTODEVS_NFT_ABI,
   CRYPTODEVS_NFT_CONTRACT_ADDRESS,
-} from "../constants";
+} from "../constants/constants";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
-
   const [treasuryBalance, setTreasuryBalance] = useState("0");
 
   const [numProposals, setNumProposals] = useState("0");
@@ -31,17 +30,16 @@ export default function Home() {
   const [walletConnected, setWalletConnected] = useState(false);
   const web3ModalRef = useRef();
 
-
   const connectWallet = async () => {
-      try {
-        await getProviderOrSigner();
-        setWalletConnected(true);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    try {
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-   const getDAOTreasuryBalance = async () => {
+  const getDAOTreasuryBalance = async () => {
     try {
       const provider = await getProviderOrSigner();
       const balance = await provider.getBalance(
@@ -53,18 +51,16 @@ export default function Home() {
     }
   };
 
-
   const getNumProposalsInDAO = async () => {
-      try {
-        const provider = await getProviderOrSigner();
-        const contract = getDaoContractInstance(provider);
-        const daoNumProposals = await contract.numProposals();
-        setNumProposals(daoNumProposals.toString());
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
+    try {
+      const provider = await getProviderOrSigner();
+      const contract = getDaoContractInstance(provider);
+      const daoNumProposals = await contract.numProposals();
+      setNumProposals(daoNumProposals.toString());
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getUserNFTBalance = async () => {
     try {
@@ -77,22 +73,22 @@ export default function Home() {
     }
   };
 
-    const createProposal = async () => {
-      try {
-        const signer = await getProviderOrSigner(true);
-        const daoContract = getDaoContractInstance(signer);
-        const txn = await daoContract.createProposal(fakeNftTokenId);
-        setLoading(true);
-        await txn.wait();
-        await getNumProposalsInDAO();
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        window.alert(error.data.message);
-      }
-    };
+  const createProposal = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const daoContract = getDaoContractInstance(signer);
+      const txn = await daoContract.createProposal(fakeNftTokenId);
+      setLoading(true);
+      await txn.wait();
+      await getNumProposalsInDAO();
+      setLoading(false);
+    } catch (error) {
+      console.error(error);
+      window.alert(error.data.message);
+    }
+  };
 
-   const fetchProposalById = async (id) => {
+  const fetchProposalById = async (id) => {
     try {
       const provider = await getProviderOrSigner();
       const daoContract = getDaoContractInstance(provider);
@@ -110,7 +106,7 @@ export default function Home() {
       console.error(error);
     }
   };
- 
+
   const fetchAllProposals = async () => {
     try {
       const proposals = [];
@@ -125,7 +121,6 @@ export default function Home() {
     }
   };
 
-  
   const voteOnProposal = async (proposalId, _vote) => {
     try {
       const signer = await getProviderOrSigner(true);
@@ -142,7 +137,7 @@ export default function Home() {
       window.alert(error.data.message);
     }
   };
- 
+
   const executeProposal = async (proposalId) => {
     try {
       const signer = await getProviderOrSigner(true);
@@ -158,22 +153,22 @@ export default function Home() {
     }
   };
 
-    const getProviderOrSigner = async (needSigner = false) => {
-      const provider = await web3ModalRef.current.connect();
-      const web3Provider = new providers.Web3Provider(provider);
-  
-      const { chainId } = await web3Provider.getNetwork();
-      if (chainId !== 5) {
-        window.alert("Please switch to the Goerli network!");
-        throw new Error("Please switch to the Goerli network");
-      }
-  
-      if (needSigner) {
-        const signer = web3Provider.getSigner();
-        return signer;
-      }
-      return web3Provider;
-    };
+  const getProviderOrSigner = async (needSigner = false) => {
+    const provider = await web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
+
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 5) {
+      window.alert("Please switch to the Goerli network!");
+      throw new Error("Please switch to the Goerli network");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+    return web3Provider;
+  };
 
   const getDaoContractInstance = (providerOrSigner) => {
     return new Contract(
@@ -206,14 +201,14 @@ export default function Home() {
       });
     }
   }, [walletConnected]);
- 
+
   useEffect(() => {
     if (selectedTab === "View Proposals") {
       fetchAllProposals();
     }
   }, [selectedTab]);
 
-   function renderTabs() {
+  function renderTabs() {
     if (selectedTab === "Create Proposal") {
       return renderCreateProposalTab();
     } else if (selectedTab === "View Proposals") {
@@ -222,6 +217,137 @@ export default function Home() {
     return null;
   }
 
+  function renderCreateProposalTab() {
+    if (loading) {
+      return (
+        <div className={styles.description}>
+          Loading... Waiting for transaction...
+        </div>
+      );
+    } else if (nftBalance === 0) {
+      return (
+        <div className={styles.description}>
+          You do not own any CryptoDevs NFTs. <br />
+          <b>You cannot create or vote on proposals</b>
+        </div>
+      );
+    } else {
+      return (
+        <div className={styles.container}>
+          <label>Fake NFT Token ID to Purchase: </label>
+          <input
+            placeholder="0"
+            type="number"
+            onChange={(e) => setFakeNftTokenId(e.target.value)}
+          />
+          <button className={styles.button2} onClick={createProposal}>
+            Create
+          </button>
+        </div>
+      );
+    }
+  }
 
-return();
+  function renderViewProposalsTab() {
+    if (loading) {
+      return (
+        <div className={styles.description}>
+          Loading... Waiting for transaction...
+        </div>
+      );
+    } else if (proposals.length === 0) {
+      return (
+        <div className={styles.description}>No proposals have been created</div>
+      );
+    } else {
+      return (
+        <div>
+          {proposals.map((p, index) => (
+            <div key={index} className={styles.proposalCard}>
+              <p>Proposal ID: {p.proposalId}</p>
+              <p>Fake NFT to Purchase: {p.nftTokenId}</p>
+              <p>Deadline: {p.deadline.toLocaleString()}</p>
+              <p>Yay Votes: {p.yayVotes}</p>
+              <p>Nay Votes: {p.nayVotes}</p>
+              <p>Executed?: {p.executed.toString()}</p>
+              {p.deadline.getTime() > Date.now() && !p.executed ? (
+                <div className={styles.flex}>
+                  <button
+                    className={styles.button2}
+                    onClick={() => voteOnProposal(p.proposalId, "YAY")}
+                  >
+                    Vote YAY
+                  </button>
+                  <button
+                    className={styles.button2}
+                    onClick={() => voteOnProposal(p.proposalId, "NAY")}
+                  >
+                    Vote NAY
+                  </button>
+                </div>
+              ) : p.deadline.getTime() < Date.now() && !p.executed ? (
+                <div className={styles.flex}>
+                  <button
+                    className={styles.button2}
+                    onClick={() => executeProposal(p.proposalId)}
+                  >
+                    Execute Proposal{" "}
+                    {p.yayVotes > p.nayVotes ? "(YAY)" : "(NAY)"}
+                  </button>
+                </div>
+              ) : (
+                <div className={styles.description}>Proposal Executed</div>
+              )}
+            </div>
+          ))}
+        </div>
+      );
+    }
+  }
+
+  return (
+    <div>
+      <Head>
+        <title>CryptoDevs DAO</title>
+        <meta name="description" content="CryptoDevs DAO" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <div className={styles.main}>
+        <div>
+          <h1 className={styles.title}>Welcome to Crypto Devs!</h1>
+          <div className={styles.description}>Welcome to the DAO!</div>
+          <div className={styles.description}>
+            Your CryptoDevs NFT Balance: {nftBalance}
+            <br />
+            Treasury Balance: {formatEther(treasuryBalance)} ETH
+            <br />
+            Total Number of Proposals: {numProposals}
+          </div>
+          <div className={styles.flex}>
+            <button
+              className={styles.button}
+              onClick={() => setSelectedTab("Create Proposal")}
+            >
+              Create Proposal
+            </button>
+            <button
+              className={styles.button}
+              onClick={() => setSelectedTab("View Proposals")}
+            >
+              View Proposals
+            </button>
+          </div>
+          {renderTabs()}
+        </div>
+        <div>
+          <img className={styles.image} src="/cryptodevs/0.svg" />
+        </div>
+      </div>
+
+      <footer className={styles.footer}>
+        Made with &#10084; by Crypto Devs
+      </footer>
+    </div>
+  );
 }
