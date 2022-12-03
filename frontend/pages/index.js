@@ -66,5 +66,50 @@ export default function Home() {
     };
 
 
-return()
+  const getUserNFTBalance = async () => {
+    try {
+      const signer = await getProviderOrSigner(true);
+      const nftContract = getCryptodevsNFTContractInstance(signer);
+      const balance = await nftContract.balanceOf(signer.getAddress());
+      setNftBalance(parseInt(balance.toString()));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+    const createProposal = async () => {
+      try {
+        const signer = await getProviderOrSigner(true);
+        const daoContract = getDaoContractInstance(signer);
+        const txn = await daoContract.createProposal(fakeNftTokenId);
+        setLoading(true);
+        await txn.wait();
+        await getNumProposalsInDAO();
+        setLoading(false);
+      } catch (error) {
+        console.error(error);
+        window.alert(error.data.message);
+      }
+    };
+
+   const fetchProposalById = async (id) => {
+    try {
+      const provider = await getProviderOrSigner();
+      const daoContract = getDaoContractInstance(provider);
+      const proposal = await daoContract.proposals(id);
+      const parsedProposal = {
+        proposalId: id,
+        nftTokenId: proposal.nftTokenId.toString(),
+        deadline: new Date(parseInt(proposal.deadline.toString()) * 1000),
+        yayVotes: proposal.yayVotes.toString(),
+        nayVotes: proposal.nayVotes.toString(),
+        executed: proposal.executed,
+      };
+      return parsedProposal;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+return();
 }
