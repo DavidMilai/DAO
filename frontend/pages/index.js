@@ -191,5 +191,37 @@ export default function Home() {
     );
   };
 
+  useEffect(() => {
+    if (!walletConnected) {
+      web3ModalRef.current = new Web3Modal({
+        network: "goerli",
+        providerOptions: {},
+        disableInjectedProvider: false,
+      });
+
+      connectWallet().then(() => {
+        getDAOTreasuryBalance();
+        getUserNFTBalance();
+        getNumProposalsInDAO();
+      });
+    }
+  }, [walletConnected]);
+ 
+  useEffect(() => {
+    if (selectedTab === "View Proposals") {
+      fetchAllProposals();
+    }
+  }, [selectedTab]);
+
+   function renderTabs() {
+    if (selectedTab === "Create Proposal") {
+      return renderCreateProposalTab();
+    } else if (selectedTab === "View Proposals") {
+      return renderViewProposalsTab();
+    }
+    return null;
+  }
+
+
 return();
 }
