@@ -227,7 +227,7 @@ export default function Home() {
     } else if (nftBalance === 0) {
       return (
         <div className={styles.description}>
-          You do not own any CryptoDevs NFTs. <br />
+          You do not own any CryptoDevs NFTs. Hence <br />
           <b>You cannot create or vote on proposals</b>
         </div>
       );
@@ -346,7 +346,7 @@ export default function Home() {
       </div>
 
       <footer className={styles.footer}>
-        Made with &#10084; by Crypto Devs
+        Made with &#10084; by Super Milai
       </footer>
     </div>
   );
